@@ -51,8 +51,8 @@ bool ParseCommands(Stream& stream){
 
             // Stop the motors
             case ' ':
-                Gripper.set_motion(STOP);
-                Lifter.set_motion(STOP);
+                Gripper.set_motion(GranularServo::STOP);
+                Lifter.set_motion(GranularServo::STOP);
                 break;
 
             // Reset the motors to position
@@ -65,19 +65,19 @@ bool ParseCommands(Stream& stream){
             // Granular Control
             case 'I':
             case 'i':
-                Lifter.set_angle(Lifter.get_angle()-1);
+                Lifter--;
                 break;
             case 'K':
             case 'k':
-                Lifter.set_angle(Lifter.get_angle()+1);
+                Lifter++;
                 break;
             case 'J':
             case 'j':
-                Gripper.set_angle(Gripper.get_angle()+1);
+                Gripper++;
                 break;
             case 'L':
             case 'l':
-                Gripper.set_angle(Gripper.get_angle()-1);
+                Gripper--;
                 break;
 
             // Binary Control
@@ -98,6 +98,16 @@ bool ParseCommands(Stream& stream){
                 Gripper.set_angle(Gripper.minAngle);
                 break;
 
+            // case 'f':
+            //     Stepper.moveTo(0);
+            //     Serial.println("Move stepper to 0");
+            //     break;
+
+            // case 'g':
+            //     Stepper.moveTo(500);
+            //     Serial.println("Move stepper to 500");
+            //     break;
+            
             // Ignore other commands
             default:
                 break;

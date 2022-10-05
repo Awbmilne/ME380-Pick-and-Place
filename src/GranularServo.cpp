@@ -1,19 +1,21 @@
 
 #include "GranularServo.h"
 
-// CLAMP a value between the lower and upper limit
-template <typename T> T CLAMP(const T& value, const T& low, const T& high) 
-{
-  return value < low ? low : (value > high ? high : value); 
-}
+#include "config.h"
+#include "utilities.h"
 
 /**
  * @brief Configure the servo and move to default position
  */
 void GranularServo::setup(){
-    servo.attach(servoPin);
-    set_speed(maxSpeed/2);
+    #ifndef ARDUINO_TEENSY40
+        servo.attach(servoPin);
+    #else
+        servo.attach(servoPin, minPulse, maxPulse);
+    #endif
+    set_speed(defaultSpeed);
     set_angle(defaultAngle);
+    time = millis();
 }
 
 
@@ -65,6 +67,7 @@ void GranularServo::set_motion(direction dir){
     switch (dir){
         case(STOP):
             goal = position; // Set the current position as the goal
+            run(true); // force update the PWM signal
             break;
         case(CW):
             goal = maxAngle; // Set the goal as the maxAngle
@@ -87,17 +90,42 @@ void GranularServo::set_motion(direction dir, float rate){
 }
 
 /**
- * @brief Operate the servo
+ * @brief Overload the ++ operator to increment the servos position
  * 
  */
-void GranularServo::run(){
-    // Update the position using a time delta
-    if (position != goal){
-        float maxStep = speed * (time - millis()) * (1.0/1000);
-        position += CLAMP(goal - position, -maxStep, maxStep); ;
+void GranularServo::operator++(int){
+    set_angle(get_angle() + granularIncrementor);
+}
+
+/**
+ * @brief Overload the -- operator to decrement the servos position
+ * 
+ */
+void GranularServo::operator--(int){
+    set_angle(get_angle() - granularIncrementor);
+}
+
+/**
+ * @brief Operate the servo, make adjustments if needed
+ * 
+ * @param force Force an update of the servos PWM, ignoring refresh rate
+ */
+void GranularServo::run(bool force){
+    // Only run at the refresh rate
+    if (millis()-time > (1000.0F / refreshRate) || force){
+        // Update the position using a time delta
+        if (position != goal){
+            float maxStep = speed * (millis()-time) * (1.0F/1000);
+            position += CLAMP(goal - position, -maxStep, maxStep); ;
+        }
+        #ifdef ARDUINO_TEENSY40
+            // Write the servos position, limiting to whole angles in range
+            servo.write(CLAMP(position, ceil(minAngle), floor(maxAngle)));
+        #else
+            // Set the servo position using the configured parameters
+            servo.writeMicroseconds(CLAMP(uint32_t((position / travel) * (maxPulse - minPulse) + minPulse), minPulse, maxPulse));
+        #endif
+        // Reset the time tracking variable
+        time = millis();
     }
-    // Set the servo position using the configured parameters
-    servo.writeMicroseconds(CLAMP(uint32_t((position / travel) * (maxPulse - minPulse) + minPulse), minPulse, maxPulse));
-    // Reset the time tracking variable
-    time = millis();
 }

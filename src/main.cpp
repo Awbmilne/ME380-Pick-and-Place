@@ -1,6 +1,5 @@
 #include <stdint.h>
 #include <Arduino.h>
-#include <Servo.h>
 
 #include "Motors.h"
 #include "CommandParsing.h"
@@ -19,10 +18,15 @@ void setup() {
   // Initialize the motors
   Gripper.setup();
   Lifter.setup();
+
+  Stepper.setMaxSpeed(1000);
+  Stepper.setAcceleration(200);
+  // Stepper.moveTo(0);
 }
  
 void loop() {
   ParseCommands(Serial);
   Gripper.run();
   Lifter.run();
+  // Stepper.run();
 }

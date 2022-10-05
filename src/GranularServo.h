@@ -1,21 +1,30 @@
 #ifndef GranularServo_h
 #define GranularServo_h
 
+#include <stdlib.h>
 #include <stdint.h>
 #include <Arduino.h>
-#include <Servo.h>
-#include <time.h>
 
-enum direction{
-    STOP = 0,
-    CW = 1,
-    CCW = 2,
-};
+#ifndef ARDUINO_TEENSY40
+    #include <time.h>
+    #include <Servo.h>
+#else 
+    #include <TimeLib.h>
+    #include <PWMServo.h>
+#endif
+
+
 /**
  * @brief Servo wrapper that provides rough speed control and controllable motion.
  * 
  */
 class GranularServo{
+    public:
+        enum direction{
+            STOP = 0,
+            CW = 1,
+            CCW = 2,
+        };
     public:
         /**
          * @brief Construct a new Granular Servo object
@@ -56,7 +65,10 @@ class GranularServo{
         void set_motion(direction dir);
         void set_motion(direction dir, float rate);
 
-        void run();
+        void operator++(int);
+        void operator--(int);
+
+        void run(bool force = false);
         void reset(){setup();}
 
         const uint8_t servoPin;
@@ -70,7 +82,11 @@ class GranularServo{
         const uint32_t maxPulse;
 
     protected:
-        Servo servo;
+        #ifdef ARDUINO_TEENSY40
+            PWMServo servo;
+        #else
+            Servo servo;
+        #endif
         float speed;
         float goal;
         float position;
