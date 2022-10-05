@@ -4,6 +4,70 @@
 #include "config.h"
 #include "utilities.h"
 
+GranularServo* GranularServo::first = nullptr;
+
+/**
+ * @brief Construct a new Granular Servo object
+ * 
+ * @param servoPin The PWM pin for controlling the servo
+ * @param maxSpeed The software limited speed of the
+ * @param defaultAngle The default angle for the servo, used at startup
+ * @param minAngle The software enforced min angle limit
+ * @param maxAngle The software enforced max angle limit
+ * @param travel The physical travel limit of the servo for the pulse range
+ * @param minPulse Minimum PWM pulse length
+ * @param maxPulse Maximum PWM pulse length
+ */
+GranularServo::GranularServo(uint8_t servoPin,
+                             float defaultAngle,
+                             float defaultSpeed,
+                             float minAngle,
+                             float maxAngle,
+                             float maxSpeed,
+                             float travel,
+                             uint32_t minPulse,
+                             uint32_t maxPulse):
+                             servoPin(servoPin),
+                             defaultAngle(defaultAngle),
+                             defaultSpeed(defaultSpeed),
+                             minAngle(minAngle),
+                             maxAngle(maxAngle),
+                             maxSpeed(maxSpeed),
+                             travel(travel),
+                             minPulse(minPulse),
+                             maxPulse(maxPulse){
+    // Add the object to the linked list of
+    if (first == nullptr){
+        first = this;
+    }
+    else{
+        GranularServo* current = first;
+        while(current->next != nullptr) current = current->next;
+        current->next = this;
+    }
+}
+
+/**
+ * @brief Safely destroy the GranularServo::GranularServo object
+ * 
+ */
+GranularServo::~GranularServo(){
+    // Remove the pointer from the single linked-list of objects
+    if (first == this){
+        if (this->next != nullptr) first = this->next;
+        else first = nullptr;
+    }
+    else{
+        GranularServo* previous = first;
+        GranularServo* current = previous->next;
+        while (current != this){
+            previous = current;
+            current = current->next;
+        }
+        previous->next = current->next;
+    }
+}
+
 /**
  * @brief Configure the servo and move to default position
  */
@@ -116,7 +180,7 @@ void GranularServo::run(bool force){
         // Update the position using a time delta
         if (position != goal){
             float maxStep = speed * (millis()-time) * (1.0F/1000);
-            position += CLAMP(goal - position, -maxStep, maxStep); ;
+            position += CLAMP(goal - position, -maxStep, maxStep);
         }
         #ifdef ARDUINO_TEENSY40
             // Write the servos position, limiting to whole angles in range
@@ -127,5 +191,17 @@ void GranularServo::run(bool force){
         #endif
         // Reset the time tracking variable
         time = millis();
+    }
+}
+
+/**
+ * @brief Call the run() function for all created servo objects
+ * 
+ */
+void GranularServo::run_all(bool force){
+    GranularServo* current = first;
+    while (current != nullptr){
+        current->run(force);
+        current = current->next;
     }
 }

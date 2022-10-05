@@ -19,25 +19,15 @@
  * 
  */
 class GranularServo{
+    // Class data structures
     public:
         enum direction{
             STOP = 0,
             CW = 1,
             CCW = 2,
         };
+    // Methods
     public:
-        /**
-         * @brief Construct a new Granular Servo object
-         * 
-         * @param servoPin The PWM pin for controlling the servo
-         * @param maxSpeed The software limited speed of the
-         * @param defaultAngle The default angle for the servo, used at startup
-         * @param minAngle The software enforced min angle limit
-         * @param maxAngle The software enforced max angle limit
-         * @param travel The physical travel limit of the servo for the pulse range
-         * @param minPulse Minimum PWM pulse length
-         * @param maxPulse Maximum PWM pulse length
-         */
         GranularServo(uint8_t servoPin,
                       float defaultAngle,
                       float defaultSpeed,
@@ -46,16 +36,9 @@ class GranularServo{
                       float maxSpeed,
                       float travel,
                       uint32_t minPulse,
-                      uint32_t maxPulse):
-            servoPin(servoPin),
-            defaultAngle(defaultAngle),
-            defaultSpeed(defaultSpeed),
-            minAngle(minAngle),
-            maxAngle(maxAngle),
-            maxSpeed(maxSpeed),
-            travel(travel),
-            minPulse(minPulse),
-            maxPulse(maxPulse){}
+                      uint32_t maxPulse);
+        // Disable destructor for memory safety (shouldnt be needed)
+        ~GranularServo();
 
         void setup();
         float get_angle();
@@ -70,7 +53,13 @@ class GranularServo{
 
         void run(bool force = false);
         void reset(){setup();}
+    
+    // Static Methods
+    public:
+        static void run_all(bool force = false);
 
+    // Public Members
+    public:
         const uint8_t servoPin;
         const float defaultAngle;
         const float defaultSpeed;
@@ -81,6 +70,7 @@ class GranularServo{
         const uint32_t minPulse;
         const uint32_t maxPulse;
 
+    // Protected Members
     protected:
         #ifdef ARDUINO_TEENSY40
             PWMServo servo;
@@ -89,8 +79,13 @@ class GranularServo{
         #endif
         float speed;
         float goal;
-        float position;
+        double position;
         time_t time;
+        GranularServo* next = nullptr;
+
+    // Static Members
+    public:
+        static GranularServo* first;
 };
 
 #endif
