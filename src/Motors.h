@@ -8,27 +8,8 @@
 #include "config.h"
 #include "GranularServo.h"
 
-GranularServo Gripper(
-    gripperServoPin,
-    gripperDefaultAngle,
-    gripperDefaultSpeed,
-    gripperMinAngle,
-    gripperMaxAngle,
-    gripperMaxSpeed,
-    gripperTravel,
-    gripperServoMinPulse,
-    gripperServoMaxPulse);
-
-GranularServo Lifter(
-    lifterServoPin,
-    lifterDefaultAngle,
-    lifterDefaultSpeed,
-    lifterMinAngle,
-    lifterMaxAngle,
-    lifterMaxSpeed,
-    lifterTravel,
-    lifterServoMinPulse,
-    lifterServoMaxPulse);
+Servo Gripper;
+Servo Lifter;
 
 AccelStepper Stepper(AccelStepper::FULL4WIRE, 5,7,6,8);
 

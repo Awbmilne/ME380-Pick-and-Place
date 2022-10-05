@@ -21,21 +21,13 @@ void setup() {
   while (Serial.available()) Serial.read();
   sendHelpMessage(Serial);
 
-  // Initialize the motors
-  Gripper.setup();
-  Lifter.setup();
+  Gripper.attach(gripperServoPin);
+  Lifter.attach(lifterServoPin);
 
-  Stepper.setMaxSpeed(1000);
-  Stepper.setAcceleration(200);
-  // Stepper.moveTo(0);
-
-  ITimer2.init();
-  ITimer2.attachInterruptInterval(uint16_t(1000/refreshRate), GranularServo::run_all, true);
+  Gripper.write(gripperDefaultAngle);
+  Lifter.write(lifterDefaultAngle);
 }
  
 void loop() {
   ParseCommands(Serial);
-  // Gripper.run();
-  // Lifter.run();
-  // Stepper.run();
 }

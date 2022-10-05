@@ -49,53 +49,53 @@ bool ParseCommands(Stream& stream){
                 sendHelpMessage(stream);
                 break;
 
-            // Stop the motors
-            case ' ':
-                Gripper.set_motion(GranularServo::STOP);
-                Lifter.set_motion(GranularServo::STOP);
-                break;
+            // // Stop the motors
+            // case ' ':
+            //     Gripper.set_motion(GranularServo::STOP);
+            //     Lifter.set_motion(GranularServo::STOP);
+            //     break;
 
             // Reset the motors to position
             case 'R':
             case 'r':
-                Gripper.reset();
-                Lifter.reset();
+                Gripper.write(gripperDefaultAngle);
+                Lifter.write(lifterDefaultAngle);
                 break;
 
             // Granular Control
             case 'I':
             case 'i':
-                Lifter--;
+                Lifter.write(Lifter.read()-granularIncrementor);
                 break;
             case 'K':
             case 'k':
-                Lifter++;
+                Lifter.write(Lifter.read()+granularIncrementor);
                 break;
             case 'J':
             case 'j':
-                Gripper++;
+                Gripper.write(Gripper.read()+granularIncrementor);
                 break;
             case 'L':
             case 'l':
-                Gripper--;
+                Gripper.write(Gripper.read()-granularIncrementor);
                 break;
 
             // Binary Control
             case 'W':
             case 'w':
-                Lifter.set_angle(Lifter.minAngle);
+                Lifter.write(lifterMinAngle);
                 break;
             case 'S':
             case 's':
-                Lifter.set_angle(Lifter.maxAngle);
+                Lifter.write(lifterMaxAngle);
                 break;
             case 'A':
             case 'a':
-                Gripper.set_angle(Gripper.maxAngle);
+                Gripper.write(gripperMaxAngle);
                 break;
             case 'D':
             case 'd':
-                Gripper.set_angle(Gripper.minAngle);
+                Gripper.write(gripperMinAngle);
                 break;
 
             // case 'f':

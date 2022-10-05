@@ -79,7 +79,7 @@ class GranularServo{
         #endif
         float speed;
         float goal;
-        double position;
+        float position;
         time_t time;
         GranularServo* next = nullptr;
 
