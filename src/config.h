@@ -30,4 +30,10 @@ const uint32_t lifterServoMaxPulse = 2500; // Minimum pwm pulse width [μs]
 const float granularIncrementor = 3; // Step size for serial controlled granular movement [deg]
 const unsigned int refreshRate = 1000; // Frequency of updates for the servo positioning [hz]
 
+/* Temporary timing measurement storage */
+extern volatile uint32_t timeSum;
+extern volatile uint32_t cycleCount;
+extern volatile uint32_t minTime;
+extern volatile uint32_t maxTime;
+
 #endif 

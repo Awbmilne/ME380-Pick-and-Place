@@ -199,9 +199,15 @@ void GranularServo::run(bool force){
  * 
  */
 void GranularServo::run_all(bool force){
+    uint32_t time = micros();
     GranularServo* current = first;
     while (current != nullptr){
         current->run(force);
         current = current->next;
     }
+    uint32_t delay = micros() - time;
+    if (delay < minTime) minTime = delay;
+    if (delay > maxTime) maxTime = delay;
+    timeSum += delay;
+    cycleCount++;
 }

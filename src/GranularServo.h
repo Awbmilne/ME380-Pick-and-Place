@@ -77,10 +77,10 @@ class GranularServo{
         #else
             Servo servo;
         #endif
-        float speed;
-        float goal;
-        double position;
-        time_t time;
+        volatile float speed;
+        volatile float goal;
+        volatile float position;
+        volatile uint32_t time;
         GranularServo* next = nullptr;
 
     // Static Members
