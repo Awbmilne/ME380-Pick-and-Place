@@ -7,6 +7,7 @@
 
 #include "config.h"
 #include "GranularServo.h"
+#include "GranularStepper.h"
 
 GranularServo Gripper(
     gripperServoPin,
@@ -16,6 +17,7 @@ GranularServo Gripper(
     gripperMaxAngle,
     gripperMaxSpeed,
     gripperTravel,
+    gripperGranularIncrementor,
     gripperServoMinPulse,
     gripperServoMaxPulse);
 
@@ -27,10 +29,21 @@ GranularServo Lifter(
     lifterMaxAngle,
     lifterMaxSpeed,
     lifterTravel,
+    lifterGranularIncrementor,
     lifterServoMinPulse,
     lifterServoMaxPulse);
 
-AccelStepper Stepper(AccelStepper::FULL4WIRE, 5,7,6,8);
-
+GranularStepper Boom(
+    boomStepperType,
+    boomStepperPins,
+    boomHomeAngle,
+    boomMaxAngle,
+    boomMinAngle,
+    boomStepsPerRev,
+    boomDefaultSpeed,
+    boomMaxSpeed,
+    boomAcceleration,
+    boomIncrementor,
+    boomMinPulse);
 
 #endif

@@ -13,18 +13,13 @@
     #include <PWMServo.h>
 #endif
 
+#include "GranularControl.h"
 
 /**
  * @brief Servo wrapper that provides rough speed control and controllable motion.
  * 
  */
-class GranularServo{
-    public:
-        enum direction{
-            STOP = 0,
-            CW = 1,
-            CCW = 2,
-        };
+class GranularServo: GranularControl{
     public:
         /**
          * @brief Construct a new Granular Servo object
@@ -45,6 +40,7 @@ class GranularServo{
                       float maxAngle,
                       float maxSpeed,
                       float travel,
+                      float incrementor,
                       uint32_t minPulse,
                       uint32_t maxPulse):
             servoPin(servoPin),
@@ -54,6 +50,7 @@ class GranularServo{
             maxAngle(maxAngle),
             maxSpeed(maxSpeed),
             travel(travel),
+            incrementor(incrementor),
             minPulse(minPulse),
             maxPulse(maxPulse){}
 
@@ -68,7 +65,8 @@ class GranularServo{
         void operator++(int);
         void operator--(int);
 
-        void run(bool force = false);
+        void run();
+        void stop(){set_angle(get_angle());}
         void reset(){setup();}
 
         const uint8_t servoPin;
@@ -78,6 +76,7 @@ class GranularServo{
         const float maxAngle;
         const float maxSpeed;
         const float travel;
+        const float incrementor;
         const uint32_t minPulse;
         const uint32_t maxPulse;
 

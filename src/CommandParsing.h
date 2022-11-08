@@ -51,8 +51,8 @@ bool ParseCommands(Stream& stream){
 
             // Stop the motors
             case ' ':
-                Gripper.set_motion(GranularServo::STOP);
-                Lifter.set_motion(GranularServo::STOP);
+                Gripper.set_motion(GranularControl::STOP);
+                Lifter.set_motion(GranularControl::STOP);
                 break;
 
             // Reset the motors to position

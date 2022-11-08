@@ -67,7 +67,7 @@ void GranularServo::set_motion(direction dir){
     switch (dir){
         case(STOP):
             goal = position; // Set the current position as the goal
-            run(true); // force update the PWM signal
+            run(); // force update the PWM signal
             break;
         case(CW):
             goal = maxAngle; // Set the goal as the maxAngle
@@ -90,19 +90,19 @@ void GranularServo::set_motion(direction dir, float rate){
 }
 
 /**
- * @brief Overload the ++ operator to increment the servos position
+ * @brief Overload the ++ operator to increment the servo's position
  * 
  */
 void GranularServo::operator++(int){
-    set_angle(get_angle() + granularIncrementor);
+    set_angle(get_angle() + incrementor);
 }
 
 /**
- * @brief Overload the -- operator to decrement the servos position
+ * @brief Overload the -- operator to decrement the servo's position
  * 
  */
 void GranularServo::operator--(int){
-    set_angle(get_angle() - granularIncrementor);
+    set_angle(get_angle() - incrementor);
 }
 
 /**
@@ -110,9 +110,9 @@ void GranularServo::operator--(int){
  * 
  * @param force Force an update of the servos PWM, ignoring refresh rate
  */
-void GranularServo::run(bool force){
+void GranularServo::run(){
     // Only run at the refresh rate
-    if (millis()-time > (1000.0F / refreshRate) || force){
+    if (millis()-time > (1000.0F / refreshRate)){
         // Update the position using a time delta
         if (position != goal){
             float maxStep = speed * (millis()-time) * (1.0F/1000);
