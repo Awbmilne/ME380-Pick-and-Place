@@ -1,0 +1,40 @@
+@startuml
+
+state "Move to Home"   as cycle_start   : Move the boom to the Home\nposition & Open the gripper
+state "Move to A"      as move_to_a     : Move boom to first bin
+state "Lower at A"     as lower_at_a    : Lower the gripper assembly
+state "Close at A"     as close_at_a    : Close the gripper
+state "Raise at A"     as raise_at_a    : Raise the gripper assembly
+state "Move to B"      as move_to_b     : Move boom to diagonal bin
+state "Lower at B"     as lower_at_b    : Lower the gripper assembly
+state "Open at B"      as open_at_b     : Open the gripper
+state "Raise at B"     as raise_at_b    : Raise the gripper assembly
+state "Move to C"      as move_to_c     : Move boom to second bin
+state "Lower at C"     as lower_at_c    : Lower the gripper assembly
+state "Close at C"     as close_at_c    : Close the gripper
+state "Raise at C"     as raise_at_c    : Raise the gripper assembly
+state "Move to D"      as move_to_d     : Move boom to diagonal bin
+state "Lower at D"     as lower_at_d    : Lower the gripper assembly
+state "Open at D"      as open_at_d     : Open the gripper
+state "Return to Home" as return_to_home: Move boom to Home position
+
+[*] -right-> cycle_start
+cycle_start-right-> move_to_a
+move_to_a  -right-> lower_at_a
+lower_at_a -right-> close_at_a
+close_at_a -down-> raise_at_a
+raise_at_a -left-> move_to_b
+move_to_b  -left-> lower_at_b
+lower_at_b -left-> open_at_b
+open_at_b  -down-> raise_at_b
+raise_at_b -right-> move_to_c
+move_to_c  -right-> lower_at_c
+lower_at_c -right-> close_at_c
+close_at_c -down-> raise_at_c
+raise_at_c -left-> move_to_d
+move_to_d  -left-> lower_at_d
+lower_at_d -left-> open_at_d
+open_at_d  -down-> return_to_home
+return_to_home -left-> [*]
+
+@enduml

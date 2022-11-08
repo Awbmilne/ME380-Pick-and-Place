@@ -1,0 +1,72 @@
+@startuml
+hide empty description
+
+' ### Primary States ###
+state "Startup" as startup
+state "Calibration" as calibration {
+    state "Fast to Limit" as fast
+    state "Back off Limit" as release
+    state "Slow to Limit" as slow
+    state "Calibration Complete" as calibration_complete <<exitPoint>>
+
+    [*] -right-> fast
+    fast -down-> release: Limit Triggered
+    release -> slow: Limit Released 
+    slow --> calibration_complete: Limit Triggered
+}
+state "Manual Control / Standby" as standby
+state "Auto Cycle" as cycle {
+    state "Move to Home" as cycle_start
+    state "Move to A" as move_to_a
+    state "Lower at A" as lower_at_a
+    state "Close at A" as close_at_a
+    state "Raise at A" as raise_at_a
+    state "Move to B" as move_to_b
+    state "Lower at B" as lower_at_b
+    state "Open at B" as open_at_b
+    state "Raise at B" as raise_at_b
+    state "Move to C" as move_to_c
+    state "Lower at C" as lower_at_c
+    state "Close at C" as close_at_c
+    state "Raise at C" as raise_at_c
+    state "Move to D" as move_to_d
+    state "Lower at D" as lower_at_d
+    state "Open at D" as open_at_d
+    state "Return to Home" as return_to_home
+    state "Cycle Complete" as cycle_end <<exitPoint>>
+
+    [*] -right-> cycle_start
+    cycle_start-right-> move_to_a
+    move_to_a  -right-> lower_at_a
+    lower_at_a -right-> close_at_a
+    close_at_a -right-> raise_at_a
+    raise_at_a -down-> move_to_b
+    move_to_b  -left-> lower_at_b
+    lower_at_b -left-> open_at_b
+    open_at_b  -left-> raise_at_b
+    raise_at_b -left-> move_to_c
+    move_to_c  -left-> lower_at_c
+    lower_at_c -down-> close_at_c
+    close_at_c -right-> raise_at_c
+    raise_at_c -right-> move_to_d
+    move_to_d  -right-> lower_at_d
+    lower_at_d -right-> open_at_d
+    open_at_d  -right-> return_to_home
+    return_to_home -right-> cycle_end
+}
+state "Cycle Pause" as pause
+
+
+' ### Primary State Flows ###
+[*] -down-> startup
+startup -down-> calibration: Calibration Start
+calibration -up-> startup: Stop
+calibration_complete -left-> standby
+' standby -> standby: Stop
+standby -down-> cycle: Cycle Start
+cycle -up-> standby: Stop
+cycle_end --> standby
+cycle -left-> pause: Pause
+pause -right-> cycle: Resume
+
+@enduml
