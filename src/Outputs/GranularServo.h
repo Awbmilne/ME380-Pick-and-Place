@@ -1,9 +1,9 @@
 #ifndef GranularServo_h
 #define GranularServo_h
 
-#include <stdlib.h>
+// #include <stdlib.h>
 #include <stdint.h>
-#include <Arduino.h>
+// #include <Arduino.h>
 
 #ifndef ARDUINO_TEENSY40
     #include <time.h>
@@ -25,6 +25,7 @@ class GranularServo: GranularControl{
          * @brief Construct a new Granular Servo object
          * 
          * @param servoPin The PWM pin for controlling the servo
+         * @param enablePin The control pin for power supply to the servo
          * @param maxSpeed The software limited speed of the
          * @param defaultAngle The default angle for the servo, used at startup
          * @param minAngle The software enforced min angle limit
@@ -34,6 +35,8 @@ class GranularServo: GranularControl{
          * @param maxPulse Maximum PWM pulse length
          */
         GranularServo(uint8_t servoPin,
+                      uint8_t enablePin,
+                      bool enableState,
                       float defaultAngle,
                       float defaultSpeed,
                       float minAngle,
@@ -43,19 +46,24 @@ class GranularServo: GranularControl{
                       float incrementor,
                       uint32_t minPulse,
                       uint32_t maxPulse):
-            servoPin(servoPin),
-            defaultAngle(defaultAngle),
-            defaultSpeed(defaultSpeed),
             minAngle(minAngle),
             maxAngle(maxAngle),
+            servoPin(servoPin),
+            enablePin(enablePin),
+            enableState(enableState),
+            defaultAngle(defaultAngle),
+            defaultSpeed(defaultSpeed),
             maxSpeed(maxSpeed),
             travel(travel),
             incrementor(incrementor),
             minPulse(minPulse),
-            maxPulse(maxPulse){}
+            maxPulse(maxPulse){
+            pinMode(enablePin, OUTPUT); // Set the Mosfet as an Output
+            digitalWrite(enablePin, enableState == LOW ? HIGH : LOW); // Disable the servo
+        }
 
-        void setup();
         float get_angle();
+        bool moving();
         void set_angle(float angle);
         void set_speed(float rate);
         void set_speedp(float percent);
@@ -65,22 +73,26 @@ class GranularServo: GranularControl{
         void operator++(int);
         void operator--(int);
 
+        const float minAngle;
+        const float maxAngle;
+
+    protected:
+        void setup();
         void run();
         void stop(){set_angle(get_angle());}
         void reset(){setup();}
-
+    
         const uint8_t servoPin;
+        const uint8_t enablePin;
+        const bool enableState;
         const float defaultAngle;
         const float defaultSpeed;
-        const float minAngle;
-        const float maxAngle;
         const float maxSpeed;
         const float travel;
         const float incrementor;
         const uint32_t minPulse;
         const uint32_t maxPulse;
 
-    protected:
         #ifdef ARDUINO_TEENSY40
             PWMServo servo;
         #else

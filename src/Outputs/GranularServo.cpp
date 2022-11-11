@@ -1,4 +1,6 @@
 
+#include <Arduino.h>
+
 #include "GranularServo.h"
 
 #include "config.h"
@@ -16,6 +18,8 @@ void GranularServo::setup(){
     set_speed(defaultSpeed);
     set_angle(defaultAngle);
     time = millis();
+
+    digitalWrite(enablePin, enableState == LOW ? LOW : HIGH);
 }
 
 
@@ -26,6 +30,15 @@ void GranularServo::setup(){
  */
 float GranularServo::get_angle(){
     return position;
+}
+
+/**
+ * @brief Check if the servo is currently moving
+ * 
+ * @return bool
+ */
+bool GranularServo::moving(){
+    return (position == goal);
 }
 
 /**
@@ -120,7 +133,7 @@ void GranularServo::run(){
         }
         #ifdef ARDUINO_TEENSY40
             // Write the servos position, limiting to whole angles in range
-            servo.write(CLAMP(position, ceil(minAngle), floor(maxAngle)));
+            servo.write(CLAMP((double)position, (double)ceil(minAngle), (double)floor(maxAngle)));
         #else
             // Set the servo position using the configured parameters
             servo.writeMicroseconds(CLAMP(uint32_t((position / travel) * (maxPulse - minPulse) + minPulse), minPulse, maxPulse));

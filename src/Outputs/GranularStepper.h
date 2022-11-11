@@ -18,6 +18,7 @@ class GranularStepper: GranularControl{
         GranularStepper(AccelStepper::MotorInterfaceType type,
                       const uint8_t stepperPins[4],
                       float homeAngle,
+                      float calibrationAngle,
                       float maxAngle,
                       float minAngle,
                       float stepsPerRev,
@@ -27,6 +28,7 @@ class GranularStepper: GranularControl{
                       float incrementor,
                       uint32_t minPulse):
             homeAngle(homeAngle),
+            calibrationAngle(calibrationAngle),
             maxAngle(maxAngle),
             minAngle(minAngle),
             stepsPerRev(stepsPerRev),
@@ -38,12 +40,13 @@ class GranularStepper: GranularControl{
                                  stepperPins[1],
                                  stepperPins[2],
                                  stepperPins[3])){
+            _stepper.setMaxSpeed(defaultSpeed);
             _stepper.setAcceleration(acceleration);
             _stepper.setMinPulseWidth(minPulse);
         }
 
-        void setup();
         void home();
+        bool moving();
         float get_angle();
         void set_angle(float angle);
         void set_angle(float angle, float rate);
@@ -53,23 +56,26 @@ class GranularStepper: GranularControl{
         void set_motion(direction dir);
         void set_motion(direction dir, float rate);
         void set_motionp(direction dir, float percent);
+        void set_calibrate();
 
         void operator++(int);
         void operator--(int);
 
+    protected:
+        void setup();
         void run();
         void stop();
         void reset(){setup();}
 
         const float homeAngle;
+        const float calibrationAngle;
         const float maxAngle;
         const float minAngle;
         const float stepsPerRev;
         const float defaultSpeed;
         const float maxSpeed;
         const float incrementor;
-
-    protected:
+        
         AccelStepper _stepper;
 
         float step_to_angle(long step);

@@ -9,7 +9,6 @@
  * 
  */
 void GranularStepper::setup(){
-    _stepper.setMaxSpeed(defaultSpeed);
     _stepper.enableOutputs();
 }
 
@@ -19,6 +18,15 @@ void GranularStepper::setup(){
  */
 void GranularStepper::home(){
     set_angle(homeAngle);
+}
+
+/**
+ * @brief Check of the stepper is moving
+ * 
+ * @return bool
+ */
+bool GranularStepper::moving(){
+    return _stepper.isRunning();
 }
 
 /**
@@ -126,6 +134,14 @@ void GranularStepper::set_motion(direction dir){
             stop();
             break;
     }
+}
+
+/**
+ * @brief Set the current position as the calibration positiion
+ * 
+ */
+void GranularStepper::set_calibrate(){
+    _stepper.setCurrentPosition(angle_to_step(calibrationAngle));
 }
 
 /**
