@@ -80,7 +80,9 @@ class GranularStepper: GranularControl{
         const float maxAngle;
         const float minAngle;
         const float stepsPerRev;
+    public:
         const float defaultSpeed;
+    protected:
         const float maxSpeed;
         const float incrementor;
         

@@ -43,7 +43,7 @@ bool run_calibration(CalibrationCommand cmd = CalibrationCommand::NONE){
                 systemState = SystemState::CALIBRATING;
                 calibState = CalibrationState::FAST_MOVE_TO_SWITCH;
                 Boom.set_calibrate(360);
-                Boom.set_motion(GranularControl::CCW);
+                Boom.set_motion(GranularControl::CCW, Boom.defaultSpeed/2);
             }
             break;
 
@@ -71,7 +71,7 @@ bool run_calibration(CalibrationCommand cmd = CalibrationCommand::NONE){
         case CalibrationState::BACK_OFF_SWITCH:
             // Wait for the stepper to finish moving back from the switch
             if (!Boom.moving()){
-                Boom.set_motion(GranularControl::CCW);
+                Boom.set_motion(GranularControl::CCW, Boom.defaultSpeed/2);
                 calibState = CalibrationState::SLOW_MOVE_TO_SWITCH;
             }
             break;

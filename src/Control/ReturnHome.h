@@ -39,7 +39,7 @@ bool run_return_home(ReturnHomeCommand cmd = ReturnHomeCommand::NONE){
                 // Start the Return Home sequence
                 returnHomeState = ReturnHomeState::OPENING_GRIPPER;
                 GranularControl::stop_all();
-                Gripper.set_angle(Gripper.maxAngle);
+                Gripper.set_angle(Gripper.minAngle);
             }
             break;
         

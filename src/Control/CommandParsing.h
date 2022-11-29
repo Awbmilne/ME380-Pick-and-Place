@@ -172,22 +172,22 @@ int ParseCommands(Stream& stream){
             case 'W':
             case 'w':
                 if (!move_check(stream)) break;
-                Lifter.set_angle(Lifter.minAngle);
+                Lifter.set_motion(GranularControl::CCW);
                 break;
             case 'S':
             case 's':
                 if (!move_check(stream)) break;
-                Lifter.set_angle(Lifter.maxAngle);
+                Lifter.set_motion(GranularControl::CW);
                 break;
             case 'A':
             case 'a':
                 if (!move_check(stream)) break;
-                Gripper.set_angle(Gripper.maxAngle);
+                Gripper.set_motion(GranularControl::CW);
                 break;
             case 'D':
             case 'd':
                 if (!move_check(stream)) break;
-                Gripper.set_angle(Gripper.minAngle);
+                Gripper.set_motion(GranularControl::CCW);
                 break;
 
             case 'X':

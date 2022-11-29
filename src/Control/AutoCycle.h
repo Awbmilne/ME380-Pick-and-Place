@@ -98,7 +98,7 @@ bool run_auto_cycle(AutoCycleCommand cmd = AutoCycleCommand::NONE){
             if (Lifter.moving()) break;
             // Move to next step
             autoCycleState = AutoCycleState::CLOSE_AT_A;
-            Gripper.set_angle(Gripper.minAngle);
+            Gripper.set_angle(Gripper.maxAngle);
             // Intentional Non-break
 
         case AutoCycleState::CLOSE_AT_A:
@@ -126,7 +126,7 @@ bool run_auto_cycle(AutoCycleCommand cmd = AutoCycleCommand::NONE){
             if (Lifter.moving()) break;
             // Move to next step
             autoCycleState = AutoCycleState::OPEN_AT_B;
-            Gripper.set_angle(Gripper.maxAngle);
+            Gripper.set_angle(Gripper.minAngle);
             // Intentional Non-break
 
         case AutoCycleState::OPEN_AT_B:
@@ -154,7 +154,7 @@ bool run_auto_cycle(AutoCycleCommand cmd = AutoCycleCommand::NONE){
             if (Lifter.moving()) break;
             // Move to next step
             autoCycleState = AutoCycleState::CLOSE_AT_C;
-            Gripper.set_angle(Gripper.minAngle);
+            Gripper.set_angle(Gripper.maxAngle);
             // Intentional Non-break
 
         case AutoCycleState::CLOSE_AT_C:
@@ -182,7 +182,7 @@ bool run_auto_cycle(AutoCycleCommand cmd = AutoCycleCommand::NONE){
             if (Lifter.moving()) break;
             // Move to next step
             autoCycleState = AutoCycleState::OPEN_AT_D;
-            Gripper.set_angle(Gripper.maxAngle);
+            Gripper.set_angle(Gripper.minAngle);
             // Intentional Non-break
 
         case AutoCycleState::OPEN_AT_D:

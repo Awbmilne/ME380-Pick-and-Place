@@ -19,16 +19,16 @@ const uint8_t boomSwitchPin = 10; // Signal pin from the boom limit switch (DIGI
 const bool gripperInvert = false; // Invert the direction of movement
 const float gripperDefaultAngle = 90; // Servo default position @ reset [deg]
 const float gripperDefaultSpeed = 180; // Servo default speed @ reset [deg/sec]
-const float gripperMinAngle = 0; // Software enforced angle limit [deg]
-const float gripperMaxAngle = 90; // Software enforced angle limit [deg]
+const float gripperMinAngle = 90; // Software enforced angle limit [deg]
+const float gripperMaxAngle = 170; // Software enforced angle limit [deg]
 const float gripperMaxSpeed = 300; // Servo max rotational speed (dont exceed servo real speed ability) [deg/sec]
 const float gripperTravel = 180; // Angle range for the specified pulse range [deg]
 const float gripperGranularIncrementor = 3; // Step size for serial controlled granular movement [deg]
 const uint32_t gripperServoMinPulse =  500; // Minimum pwm pulse width [μs]
 const uint32_t gripperServoMaxPulse = 2500; // Maximum pwm pulse width [μs]
 
-const bool lifterInvert = false; // Invert the direction of movement
-const float lifterDefaultAngle = 135; // Servo default position @ reset [deg]
+const bool lifterInvert = true; // Invert the direction of movement
+const float lifterDefaultAngle = 0; // Servo default position @ reset [deg]
 const float lifterDefaultSpeed = 180; // Servo default speed @ reset [deg/sec]
 const float lifterMinAngle = 0; // Software enforced angle limit [deg]
 const float lifterMaxAngle = 135; // Software enforced angle limit [deg]
@@ -41,15 +41,15 @@ const uint32_t lifterServoMaxPulse = 2500; // Minimum pwm pulse width [μs]
 /* Stepper Configuration Parameters */
 const char boomName[] = "Boom"; // Serial output name for boom
 const AccelStepper::MotorInterfaceType boomStepperType = AccelStepper::FULL4WIRE;
-const uint8_t boomStepperPins[4] = {6,8,7,9}; // Pins used for stepper control
+const uint8_t boomStepperPins[4] = {6,7,8,9}; // Pins used for stepper control
 const bool boomInvert = false; // Invert the direction of the stepper
 const float boomHomeAngle = 180; // Home angle for the boom to return to [deg]
 const float boomMaxAngle = 350; // Max allowed angle for the boom [deg]
 const float boomMinAngle = 10; // Min allowed angle for the boom [deg]
 const float boomStepsPerRev = 200*3; // Number of steps per revolution [deg]
-const float boomDefaultSpeed = 20; // Default speed of boom [deg/sec]
-const float boomMaxSpeed = 30; // Max speed of boom [deg/sec]
-const float boomAcceleration = 30; // Boom acceleration [deg/sec^2]
+const float boomDefaultSpeed = 30; // Default speed of boom [deg/sec]
+const float boomMaxSpeed = 45; // Max speed of boom [deg/sec]
+const float boomAcceleration = 45; // Boom acceleration [deg/sec^2]
 const float boomIncrementor = 3; // Step size for serial controlled movement [deg]
 const uint32_t boomMinPulse = 20; // Minimum pwm pulse width [μs]
 const float boomBinAPosition = 45;  // The anglular position of bin A
@@ -64,4 +64,4 @@ const float boomCalibrationAngle = 11; // The calibrated location of the limit s
 const unsigned int refreshRate = 1000; // Frequency of updates for the servo positioning [hz]
 const unsigned int debounceInterval = 10; // Interval used to calculate debounce [ms]
 
-#endif 
+#endif
