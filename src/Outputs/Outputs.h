@@ -10,9 +10,11 @@
  * 
  */
 GranularServo Gripper(
+    gripperName,
     gripperServoPin,
     gripperEnablePin,
     gripperEnableState,
+    gripperInvert,
     gripperDefaultAngle,
     gripperDefaultSpeed,
     gripperMinAngle,
@@ -28,9 +30,11 @@ GranularServo Gripper(
  * 
  */
 GranularServo Lifter(
+    lifterName,
     lifterServoPin,
     lifterEnablePin,
     lifterEnableState,
+    lifterInvert,
     lifterDefaultAngle,
     lifterDefaultSpeed,
     lifterMinAngle,
@@ -46,8 +50,10 @@ GranularServo Lifter(
  * 
  */
 GranularStepper Boom(
+    boomName,
     boomStepperType,
     boomStepperPins,
+    boomInvert,
     boomHomeAngle,
     boomCalibrationAngle,
     boomMaxAngle,

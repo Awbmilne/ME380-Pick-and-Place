@@ -119,7 +119,7 @@ bool run_auto_cycle(AutoCycleCommand cmd = AutoCycleCommand::NONE){
             if (Boom.moving()) break;
             // Move to next step
             autoCycleState = AutoCycleState::LOWER_AT_B;
-            Lifter.set_angle(Lifter.minAngle);
+            Lifter.set_angle(Lifter.maxAngle);
             // Intentional Non-break
 
         case AutoCycleState::LOWER_AT_B:

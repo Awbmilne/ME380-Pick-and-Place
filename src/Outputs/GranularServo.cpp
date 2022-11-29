@@ -3,8 +3,8 @@
 
 #include "GranularServo.h"
 
-#include "config.h"
 #include "utilities.h"
+#include "config.h"
 
 /**
  * @brief Configure the servo and move to default position
@@ -16,12 +16,11 @@ void GranularServo::setup(){
         servo.attach(servoPin, minPulse, maxPulse);
     #endif
     set_speed(defaultSpeed);
-    set_angle(defaultAngle);
+    set_angle(defaultAngle, true);
     time = millis();
 
     digitalWrite(enablePin, enableState == LOW ? LOW : HIGH);
 }
-
 
 /**
  * @brief Get the servo's current position
@@ -38,7 +37,7 @@ float GranularServo::get_angle(){
  * @return bool
  */
 bool GranularServo::moving(){
-    return (position == goal);
+    return (position != goal);
 }
 
 /**
@@ -46,9 +45,14 @@ bool GranularServo::moving(){
  * 
  * @param angle Angle to move to
  */
-void GranularServo::set_angle(float angle){
+void GranularServo::set_angle(float angle, bool bypass_speed){
     // Set the angle within the clamped range
     goal = CLAMP(angle, minAngle, maxAngle);
+    // Force instant position update if required
+    if (bypass_speed){
+        position = goal;
+        run(true);
+    }
 }
 
 /**
@@ -121,11 +125,19 @@ void GranularServo::operator--(int){
 /**
  * @brief Operate the servo, make adjustments if needed
  * 
- * @param force Force an update of the servos PWM, ignoring refresh rate
  */
 void GranularServo::run(){
+    run(false);
+}
+
+/**
+ * @brief Operate the servo, make adjustments if needed
+ * 
+ * @param force Force an update of the servos PWM, ignoring refresh rate
+ */
+void GranularServo::run(bool force_update){
     // Only run at the refresh rate
-    if (millis()-time > (1000.0F / refreshRate)){
+    if (millis()-time > (1000.0F / refreshRate) || force_update){
         // Update the position using a time delta
         if (position != goal){
             float maxStep = speed * (millis()-time) * (1.0F/1000);
@@ -133,12 +145,34 @@ void GranularServo::run(){
         }
         #ifdef ARDUINO_TEENSY40
             // Write the servos position, limiting to whole angles in range
-            servo.write(CLAMP((double)position, (double)ceil(minAngle), (double)floor(maxAngle)));
+            if (!invert)
+                servo.write(CLAMP((double)position, (double)ceil(minAngle), (double)floor(maxAngle)));
+            else
+                servo.write(CLAMP(double(travel)-(double)position, (double)ceil(minAngle), (double)floor(maxAngle)));
         #else
             // Set the servo position using the configured parameters
-            servo.writeMicroseconds(CLAMP(uint32_t((position / travel) * (maxPulse - minPulse) + minPulse), minPulse, maxPulse));
+            if (!invert)
+                servo.writeMicroseconds(CLAMP(uint32_t((position / travel) * (maxPulse - minPulse) + minPulse), minPulse, maxPulse));
+            else
+                servo.writeMicroseconds(CLAMP(maxPulse - uint32_t((position / travel) * (maxPulse - minPulse)), minPulse, maxPulse));
         #endif
         // Reset the time tracking variable
         time = millis();
     }
+}
+
+/**
+ * @brief Output the Servo's position
+ * 
+ * @param stream 
+ */
+void GranularServo::output(Stream& stream){
+    char vals[3][6] = {};
+    dtostrf(minAngle, 5, 1, vals[0]);
+    dtostrf(position, 5, 1, vals[1]);
+    dtostrf(maxAngle, 5, 1, vals[2]);
+    const static char output_string[] PROGMEM = "%7s Servo:   %5s, %5s, %5s";
+    char buffer[37];
+    snprintf_P(buffer, sizeof(buffer), output_string, name, vals[0], vals[1], vals[2]);
+    stream.println(buffer);
 }

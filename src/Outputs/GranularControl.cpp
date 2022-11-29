@@ -81,3 +81,16 @@ void GranularControl::reset_all(){
         current = current->next;
     }
 }
+
+/**
+ * @brief 
+ * 
+ * @param stream 
+ */
+void GranularControl::output_all(Stream& stream){
+    GranularControl* current = first;
+    while(current != nullptr){
+        current->output(stream);
+        current = current->next;
+    }
+}

@@ -14,11 +14,13 @@
  * @brief Help message to be sent over Serial control terminal
  * 
  */
-const char helpString[] = "============ List of Commands ============\n"
+const char helpString[] PROGMEM = 
+                          "============ List of Commands ============\n"
                           " h - Help menu (this menu)                \n"
                           " r - Reset motors to default position     \n"
+                          " p - Print the current position of motors \n"
                           " . - Start the calibration sequence       \n"
-                         " \\ - Start the Auto-Cycle sequence        \n"
+                          " \\ - Start the Auto-Cycle sequence        \n"
                           " ` - Pause the Auto-Cycle                 \n"
                           " ~ - Resume the Auto-Cycle                \n"
                           " [space] - Stop all motion and sequences  \n"
@@ -40,7 +42,7 @@ const char helpString[] = "============ List of Commands ============\n"
 
 // Send the help message to specified stream object
 void sendHelpMessage(Stream& stream){
-    stream.write(helpString);
+    stream.print((const __FlashStringHelper*)helpString);
 }
 
 /**
@@ -52,13 +54,13 @@ void sendHelpMessage(Stream& stream){
  */
 bool move_check(Stream& stream, const char command = 0){
     if (systemState == SystemState::UNCALIBRATED && command != '.'){
-        stream.println("System must be calibrated before this commands is allowed!");
+        stream.println(F("System must be calibrated before this commands is allowed!"));
         return false;
     }
     if (systemState != SystemState::STANDBY
-     || returnHomeState != ReturnHomeState::HOME
-     && returnHomeState != ReturnHomeState::NOT_HOME){
-        stream.println("This command cannot be called during movement sequence!");
+     || (returnHomeState != ReturnHomeState::HOME
+     && returnHomeState != ReturnHomeState::NOT_HOME)){
+        stream.println(F("This command cannot be called during movement sequence!"));
         return false;
      }
      return true;
@@ -84,13 +86,13 @@ int ParseCommands(Stream& stream){
             case '.':
                 if (!move_check(stream, command)) break;
                 run_calibration(CalibrationCommand::START);
-                stream.println("Calibration sequence started.");
+                stream.println(F("Calibration sequence started."));
                 break;
             // Start the Auto-Cycle
             case '\\':
                 if (!move_check(stream)) break;
                 run_auto_cycle(AutoCycleCommand::START);
-                stream.println("Auto Cycle started.");
+                stream.println(F("Auto Cycle started."));
                 break;
             // Stop the cycle, or Calibration
             case ' ':
@@ -98,22 +100,22 @@ int ParseCommands(Stream& stream){
                 run_return_home(ReturnHomeCommand::STOP);
                 run_calibration(CalibrationCommand::STOP);
                 run_auto_cycle(AutoCycleCommand::STOP);
-                stream.println("All sequences stopped.");
+                stream.println(F("All sequences stopped."));
                 break;
             // Pause/Cancel the current action
             case '`':
                 GranularControl::stop_all();
                 run_calibration(CalibrationCommand::STOP);
                 run_auto_cycle(AutoCycleCommand::PAUSE);
-                stream.println("Motion stopped.");
+                stream.println(F("Motion stopped."));
                 break;
             // Resume the Cycle
             case '~':
                 if (systemState == SystemState::CYCLE_PAUSE){
                     run_auto_cycle(AutoCycleCommand::CONTINUE);
-                    stream.println("Auto Cycle resumed.");
+                    stream.println(F("Auto Cycle resumed."));
                 }
-                else stream.println("Nothing to resume");
+                else stream.println(F("Nothing to resume"));
                 break;
 
             // Return to home, stops first
@@ -124,7 +126,14 @@ int ParseCommands(Stream& stream){
                 run_calibration(CalibrationCommand::STOP);
                 run_auto_cycle(AutoCycleCommand::STOP);
                 run_return_home(ReturnHomeCommand::START);
-                stream.println("Returning to home position");
+                stream.println(F("Returning to home position"));
+                break;
+
+            // Print position of all motors
+            case 'P':
+            case 'p':
+                GranularControl::output_all(Serial);
+                Serial.println();
                 break;
 
             // Granular Control
@@ -195,9 +204,9 @@ int ParseCommands(Stream& stream){
 
             // Ignore other commands
             default:
-                stream.print("Invalid command '");
+                stream.print(F("Invalid command '"));
                 stream.print(command);
-                stream.println("'");
+                stream.println(F("'"));
                 break;
         }
     }

@@ -2,10 +2,10 @@
 #define ReturnHome_h
 
 #include <stdint.h>
-#include <Arduino.h>
 
 #include "../Outputs/Outputs.h"
 #include "SystemState.h"
+#include "AutoCycleState.h"
 #include "ReturnHomeState.h"
 
 /**
@@ -33,9 +33,12 @@ bool run_return_home(ReturnHomeCommand cmd = ReturnHomeCommand::NONE){
             break;
         
         case ReturnHomeCommand::START:
-            if (systemState == SystemState::STANDBY){
+            if (systemState == SystemState::STANDBY
+            || (systemState == SystemState::AUTO_CYCLE
+             && autoCycleState == AutoCycleState::END_HOME)){
                 // Start the Return Home sequence
                 returnHomeState = ReturnHomeState::OPENING_GRIPPER;
+                GranularControl::stop_all();
                 Gripper.set_angle(Gripper.maxAngle);
             }
             break;

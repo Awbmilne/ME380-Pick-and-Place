@@ -1,8 +1,8 @@
 
 #include "GranularStepper.h"
 
-#include "config.h"
 #include "utilities.h"
+#include "config.h"
 
 /**
  * @brief Configure the stepper and prepair for movement
@@ -137,11 +137,19 @@ void GranularStepper::set_motion(direction dir){
 }
 
 /**
- * @brief Set the current position as the calibration positiion
+ * @brief Set the current position as the calibration position
  * 
  */
 void GranularStepper::set_calibrate(){
-    _stepper.setCurrentPosition(angle_to_step(calibrationAngle));
+    set_calibrate(calibrationAngle);
+}
+
+/**
+ * @brief Set the current position with a specified calibration angle
+ * 
+ */
+void GranularStepper::set_calibrate(float angle){
+    _stepper.setCurrentPosition(angle_to_step(angle));
 }
 
 /**
@@ -186,7 +194,7 @@ void GranularStepper::stop(){
  * @return float The angle that corresponds
  */
 float GranularStepper::step_to_angle(long step){
-    return (step / stepsPerRev);
+    return (step / stepsPerRev * 360);
 }
 
 /**
@@ -196,5 +204,21 @@ float GranularStepper::step_to_angle(long step){
  * @return long The step that corresponds
  */
 long GranularStepper::angle_to_step(float angle){
-    return (angle * stepsPerRev);
+    return (angle/360 * stepsPerRev);
+}
+
+/**
+ * @brief Output the Stepper's position
+ * 
+ * @param stream 
+ */
+void GranularStepper::output(Stream& stream){
+    char vals[3][6] = {};
+    dtostrf(minAngle, 5, 1, vals[0]);
+    dtostrf(step_to_angle(_stepper.currentPosition()), 5, 1, vals[1]);
+    dtostrf(maxAngle, 5, 1, vals[2]);
+    const static char output_string[] PROGMEM = "%7s Stepper: %5s, %5s, %5s";
+    char buffer[37];
+    snprintf_P(buffer, sizeof(buffer), output_string, name, vals[0], vals[1], vals[2]);
+    stream.println(buffer);
 }

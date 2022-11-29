@@ -24,6 +24,7 @@ class GranularServo: GranularControl{
         /**
          * @brief Construct a new Granular Servo object
          * 
+         * @param name The name of the servo
          * @param servoPin The PWM pin for controlling the servo
          * @param enablePin The control pin for power supply to the servo
          * @param maxSpeed The software limited speed of the
@@ -34,9 +35,11 @@ class GranularServo: GranularControl{
          * @param minPulse Minimum PWM pulse length
          * @param maxPulse Maximum PWM pulse length
          */
-        GranularServo(uint8_t servoPin,
+        GranularServo(const char* name,
+                      uint8_t servoPin,
                       uint8_t enablePin,
                       bool enableState,
+                      bool invert,
                       float defaultAngle,
                       float defaultSpeed,
                       float minAngle,
@@ -46,11 +49,13 @@ class GranularServo: GranularControl{
                       float incrementor,
                       uint32_t minPulse,
                       uint32_t maxPulse):
+            name(name),
             minAngle(minAngle),
             maxAngle(maxAngle),
             servoPin(servoPin),
             enablePin(enablePin),
             enableState(enableState),
+            invert(invert),
             defaultAngle(defaultAngle),
             defaultSpeed(defaultSpeed),
             maxSpeed(maxSpeed),
@@ -64,7 +69,7 @@ class GranularServo: GranularControl{
 
         float get_angle();
         bool moving();
-        void set_angle(float angle);
+        void set_angle(float angle, bool bypass_speed=false);
         void set_speed(float rate);
         void set_speedp(float percent);
         void set_motion(direction dir);
@@ -73,18 +78,22 @@ class GranularServo: GranularControl{
         void operator++(int);
         void operator--(int);
 
+        const char* name;
         const float minAngle;
         const float maxAngle;
 
     protected:
         void setup();
         void run();
+        void run(bool force_update);
         void stop(){set_angle(get_angle());}
         void reset(){setup();}
+        void output(Stream& stream);
     
         const uint8_t servoPin;
         const uint8_t enablePin;
         const bool enableState;
+        const bool invert;
         const float defaultAngle;
         const float defaultSpeed;
         const float maxSpeed;

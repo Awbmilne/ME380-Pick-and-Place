@@ -3,7 +3,8 @@
 
 #include <stdlib.h>
 #include <stdint.h>
-#include <Arduino.h>
+#include <Stream.h>
+// #include <Arduino.h>
 
 #include <AccelStepper.h>
 
@@ -15,18 +16,21 @@
  */
 class GranularStepper: GranularControl{
     public:
-        GranularStepper(AccelStepper::MotorInterfaceType type,
-                      const uint8_t stepperPins[4],
-                      float homeAngle,
-                      float calibrationAngle,
-                      float maxAngle,
-                      float minAngle,
-                      float stepsPerRev,
-                      float defaultSpeed,
-                      float maxSpeed,
-                      float acceleration,
-                      float incrementor,
-                      uint32_t minPulse):
+        GranularStepper(const char* name,
+                        AccelStepper::MotorInterfaceType type,
+                        const uint8_t stepperPins[4],
+                        bool invert,
+                        float homeAngle,
+                        float calibrationAngle,
+                        float maxAngle,
+                        float minAngle,
+                        float stepsPerRev,
+                        float defaultSpeed,
+                        float maxSpeed,
+                        float acceleration,
+                        float incrementor,
+                        uint32_t minPulse):
+            name(name),
             homeAngle(homeAngle),
             calibrationAngle(calibrationAngle),
             maxAngle(maxAngle),
@@ -40,9 +44,10 @@ class GranularStepper: GranularControl{
                                  stepperPins[1],
                                  stepperPins[2],
                                  stepperPins[3])){
-            _stepper.setMaxSpeed(defaultSpeed);
-            _stepper.setAcceleration(acceleration);
+            _stepper.setMaxSpeed(angle_to_step(defaultSpeed));
+            _stepper.setAcceleration(angle_to_step(acceleration));
             _stepper.setMinPulseWidth(minPulse);
+            _stepper.setPinsInverted(invert);
         }
 
         void home();
@@ -57,6 +62,7 @@ class GranularStepper: GranularControl{
         void set_motion(direction dir, float rate);
         void set_motionp(direction dir, float percent);
         void set_calibrate();
+        void set_calibrate(float angle);
 
         void operator++(int);
         void operator--(int);
@@ -66,7 +72,9 @@ class GranularStepper: GranularControl{
         void run();
         void stop();
         void reset(){setup();}
+        void output(Stream& stream);
 
+        const char* name;
         const float homeAngle;
         const float calibrationAngle;
         const float maxAngle;

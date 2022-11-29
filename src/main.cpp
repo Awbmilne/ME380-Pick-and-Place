@@ -8,15 +8,33 @@
 
 void setup() {
     // Configure the Serial object
+    pinMode(LED_BUILTIN, OUTPUT);
+
+    // Configure the Serial
     Serial.begin(115200);
     #ifdef ARDUINO_TEENSY40
         while (!Serial){} // Wait for USB Serial to connect
+        Serial.println(F("Serial Connected!"));
     #endif
-    Serial.write("Serial Configured!\n\n Press any key to enable motors and get started!\n\n");
+    Serial.println(F("Press any key to enable motors and get started!\n"));
 
     // Wait for an input on the serial terminal, clear the input then send the help message
-    while (!Serial.available()) delay(100);
-    while (Serial.available()) Serial.read();
+    while(true){
+        while (!Serial.available()){
+            // Blink the LED to show the status
+            delay(100);
+            digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+        }
+
+        char bit = Serial.read();
+        if (bit == 'h' || bit == 'H'){
+            Serial.println(F("Serial Connected! Press any key to enable motors and initialize system."));
+        }
+        else {
+            while (Serial.available()) Serial.read();
+            break;
+        }
+    }
     sendHelpMessage(Serial);
 
     // Setup the Control systems

@@ -15,10 +15,12 @@
  */
 class LimitSwitch: Sensor{
     public:
-        LimitSwitch(int pin, int defaultState, uint8_t mode=INPUT):
+        LimitSwitch(int pin, int defaultState, uint8_t mode=INPUT_PULLUP, unsigned int interval=2):
             pin(pin),
             defaultState(defaultState),
-            mode(mode){}
+            mode(mode),
+            interval(interval){
+            }
 
         bool pressed(){
             return _switch.read() != defaultState;
@@ -31,7 +33,7 @@ class LimitSwitch: Sensor{
          */
         void setup(){
             _switch.attach(pin, mode);
-            _switch.interval(2);
+            _switch.interval(interval);
         }
 
         /**
@@ -46,7 +48,8 @@ class LimitSwitch: Sensor{
         Bounce _switch = Bounce();
         const int pin;
         const int defaultState;  
-        const uint8_t mode;      
+        const uint8_t mode;    
+        const unsigned int interval;  
 };
 
 #endif

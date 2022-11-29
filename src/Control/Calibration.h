@@ -21,12 +21,6 @@ enum class CalibrationCommand{
 };
 
 /**
- * @brief Boolean to remember if the system was calibrated before the current
- * calibration attemp
- */
-bool wasCalibrated = false;
-
-/**
  * @brief Using the current calibration state, run the calibration
  * 
  * @param cmd The CalibrationCommand to pass to the calibration state system.
@@ -46,20 +40,20 @@ bool run_calibration(CalibrationCommand cmd = CalibrationCommand::NONE){
                 && (returnHomeState == ReturnHomeState::HOME
                 || returnHomeState == ReturnHomeState::NOT_HOME)){
                 // Start the calibration sequence
-                if (systemState == SystemState::STANDBY) wasCalibrated = false;
                 systemState = SystemState::CALIBRATING;
                 calibState = CalibrationState::FAST_MOVE_TO_SWITCH;
+                Boom.set_calibrate(360);
                 Boom.set_motion(GranularControl::CCW);
-             }
+            }
             break;
 
         case CalibrationCommand::STOP:
             calibState = CalibrationState::NONE;
-            systemState = wasCalibrated ? SystemState::STANDBY : SystemState::UNCALIBRATED;
+            systemState = SystemState::UNCALIBRATED;
             GranularControl::stop_all();
             return false;
     }
-
+     
     // Proceed with calibration
     switch (calibState){
         case CalibrationState::NONE:
@@ -87,6 +81,7 @@ bool run_calibration(CalibrationCommand cmd = CalibrationCommand::NONE){
             if (BoomSwitch.pressed()){
                 Boom.set_calibrate();
                 calibState = CalibrationState::NONE;
+                systemState = SystemState::STANDBY;
                 run_return_home(ReturnHomeCommand::START);
                 return true;
             }

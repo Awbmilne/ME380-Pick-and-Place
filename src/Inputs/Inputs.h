@@ -10,7 +10,9 @@
  */
 LimitSwitch BoomSwitch(
     boomSwitchPin,
-    boomSwitchDefaultState
+    boomSwitchDefaultState,
+    boomSwitchMode,
+    debounceInterval
 );
 
 #endif
