@@ -200,10 +200,16 @@ bool run_auto_cycle(AutoCycleCommand cmd = AutoCycleCommand::NONE){
             // Intentional Non-break
 
         case AutoCycleState::END_HOME:
-            if (returnHomeState == ReturnHomeState::HOME)
+            if (returnHomeState == ReturnHomeState::HOME){
+                autoCycleState = AutoCycleState::NONE;
+                systemState = SystemState::STANDBY;
                 return true;
-            if (returnHomeState == ReturnHomeState::NOT_HOME)
+            }
+            if (returnHomeState == ReturnHomeState::NOT_HOME){
+                autoCycleState = AutoCycleState::NONE;
+                systemState = SystemState::STANDBY;
                 return run_auto_cycle(AutoCycleCommand::STOP);
+            }
             break;
     }
     return false;
