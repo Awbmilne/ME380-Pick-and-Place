@@ -1,0 +1,24 @@
+@startuml
+hide empty description
+
+' ### Primary States ###
+state "Startup" as startup
+state "Calibration" as calibration
+state "Manual Control / Standby" as standby
+state "Auto Cycle" as cycle
+state "Cycle Pause" as pause
+
+
+' ### Primary State Flows ###
+[*] -down-> startup
+startup -down-> calibration: Calibration Start
+calibration -up-> startup: Stop
+calibration --> standby: Calibration Complete
+' standby -> standby: Stop
+standby -down-> cycle: Cycle Start
+cycle -up-> standby: Stop
+standby -up-> calibration: Calibrate
+cycle -left-> pause: Pause
+pause -right-> cycle: Resume
+
+@enduml
